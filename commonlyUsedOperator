@@ -1,0 +1,34 @@
+SequencialHttpMergeMap() {
+    this.appService.getAllPost().pipe(map(posts => {
+      this.mergeMapTotalPost = posts as any[];
+      return this.mergeMapTotalPost
+    }),
+      mergeMap(post => this.appService.getPostById(post[this.mergeMapselectedPost].id))
+    ).subscribe(p => {
+      this.mergeMappostDetails = p;
+    });
+  }
+
+ParallelHttpForkJoin() {
+  forkJoin([this.appService.getAllPost(), this.appService.getPostById(this.mergeMapselectedPost)])
+    .subscribe(allResullt => {
+      this.forkJoinTotalPost = allResullt[0] as any[];
+      this.forkJoinpostDetails = allResullt[1];
+    })
+}
+
+CombineMergeMapForkJoin() {
+  this.appService.getAllPost().pipe(map(posts => {
+    this.mergeMapTotalPost = posts as any[];
+    return this.mergeMapTotalPost
+  }),
+    mergeMap(post => {
+      const first = this.appService.getPostById(post[this.mergeMapselectedPost].id);
+      const second = this.appService.getPostById(3);
+      return forkJoin([first, second]);
+    })
+  ).subscribe(result => {
+    console.log(result[0]);
+    console.log(result[1]);
+  });
+}
